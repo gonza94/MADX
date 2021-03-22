@@ -1,0 +1,1 @@
+This is the folder for MADX simulations and calculations using the CRYRING lattice.
