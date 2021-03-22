@@ -1,0 +1,217 @@
+
+  ++++++++++++++++++++++++++++++++++++++++++++
+  +     MAD-X 5.05.02  (64 bit, Darwin)      +
+  + Support: mad@cern.ch, http://cern.ch/mad +
+  + Release   date: 2019.07.25               +
+  + Execution date: 2021.03.22 12:26:54      +
+  ++++++++++++++++++++++++++++++++++++++++++++
+TITLE,'test_TSR.MADX';        
+
+
+
+// Definition of the beam
+
+BEAM, PARTICLE=ELECTRON, ENERGY=2500;
+
+
+
+// Read the lattice file from the sequence file
+
+CALL, FILE="../CRYRING_FULL.seq";
+
+/***Definition of the elements***/
+
+DM: RBEND, L=0.621, ANGLE=PI/6;
+
+
+
+kqf=1.79388;
+
+kqd=-2.29527;
+
+
+
+QF: QUADRUPOLE, L=0.283, K1:=kqf;
+
+QD: QUADRUPOLE, L=0.283, K1:=kqd;
+
+
+
+ksf=0.0000;
+
+ksd=-0.0000;
+
+SF: SEXTUPOLE, L=0.2, K2:=ksf;
+
+SD: SEXTUPOLE, L=0.2, K2:=ksd; 
+
+
+
+/***Definition of sequence***/
+
+CRYF: SEQUENCE, REFER=ENTRY, L=9.03*6;
+
+ 
+
+ DM1: DM, AT=1.96;
+
+ QF1: QF, AT=3.196;
+
+ QD1: QD, AT=4.370;
+
+ SD1: SD, AT=4.720;
+
+ QF2: QF, AT=5.544;
+
+ SF1: SF, AT=5.894;
+
+ DM2: DM, AT=6.444;
+
+
+
+ DM3: DM, AT=9.03+1.96;
+
+ QF3: QF, AT=9.03+3.196;
+
+ QD2: QD, AT=9.03+4.370;
+
+ SD2: SD, AT=9.03+4.720;
+
+ QF4: QF, AT=9.03+5.544;
+
+ SF2: SF, AT=9.03+5.894;
+
+ DM4: DM, AT=9.03+6.444;
+
+ 
+
+ DM5: DM, AT=2*9.03+1.96;
+
+ QF5: QF, AT=2*9.03+3.196;
+
+ QD3: QD, AT=2*9.03+4.370;
+
+ SD3: SD, AT=2*9.03+4.720;
+
+ QF6: QF, AT=2*9.03+5.544;
+
+ SF3: SF, AT=2*9.03+5.894;
+
+ DM6: DM, AT=2*9.03+6.444;
+
+
+
+ DM7: DM, AT=3*9.03+1.96;
+
+ QF7: QF, AT=3*9.03+3.196;
+
+ QD4: QD, AT=3*9.03+4.370;
+
+ SD4: SD, AT=3*9.03+4.720;
+
+ QF8: QF, AT=3*9.03+5.544;
+
+ SF4: SF, AT=3*9.03+5.894;
+
+ DM8: DM, AT=3*9.03+6.444;
+
+
+
+ DM9: DM, AT=4*9.03+1.96;
+
+ QF9: QF, AT=4*9.03+3.196;
+
+ QD5: QD, AT=4*9.03+4.370;
+
+ SD5: SD, AT=4*9.03+4.720;
+
+ QF10: QF, AT=4*9.03+5.544;
+
+ SF5: SF, AT=4*9.03+5.894;
+
+ DM10: DM, AT=4*9.03+6.444;
+
+
+
+ DM11: DM, AT=5*9.03+1.96;
+
+ QF11: QF, AT=5*9.03+3.196;
+
+ QD6: QD, AT=5*9.03+4.370;
+
+ SD6: SD, AT=5*9.03+4.720;
+
+ QF12: QF, AT=5*9.03+5.544;
+
+ SF6: SF, AT=5*9.03+5.894;
+
+ DM12: DM, AT=5*9.03+6.444;
+
+
+
+ENDSEQUENCE;
+OPTION, ECHO;
+
+
+
+// Activation of the sequence 
+
+USE, SEQUENCE=CRYF;
+
+
+
+// Calculate and save periodic Twiss solution
+
+TWISS,SAVE,FILE=CRYRING;
+
+enter Twiss module
+  
+iteration:   1 error:   0.000000E+00 deltap:   0.000000E+00
+orbit:   0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
+
+++++++ table: summ
+
+            length             orbit5               alfa            gammatr 
+             54.18                 -0       0.1883464262        2.304206026 
+
+                q1                dq1            betxmax              dxmax 
+       2.418793198       -1.520026832        7.154277673        2.028386201 
+
+             dxrms             xcomax             xcorms                 q2 
+       1.781785873                  0                  0        2.708415197 
+
+               dq2            betymax              dymax              dyrms 
+      -4.459139456        9.152730094                  0                  0 
+
+            ycomax             ycorms             deltap            synch_1 
+                 0                  0                  0                  0 
+
+           synch_2            synch_3            synch_4            synch_5 
+                 0                  0                  0                  0 
+
+            nflips 
+                 0 
+
+
+// Plot betax and betay vs s (with interpolation)
+
+PLOT,HAXIS=S,VAXIS1=BETX,BETY,colour=100,FILE=CRYRING_PLOT,interpolate;
+
+Plot - default table plotted: twiss
+
+ GXPLOT-X11  1.50 initialized
+
+ plot number =            1
+PLOT,HAXIS=S,VAXIS1=DX,colour=100,FILE=tsr_plot,interpolate;
+
+Plot - default table plotted: twiss
+ plot number =            2
+
+
+STOP;
+
+  Number of warnings: 0
+
+  ++++++++++++++++++++++++++++++++++++++++++++
+  +          MAD-X finished normally         +
+  ++++++++++++++++++++++++++++++++++++++++++++
