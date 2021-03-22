@@ -1,0 +1,188 @@
+
+  ++++++++++++++++++++++++++++++++++++++++++++
+  +     MAD-X 5.05.02  (64 bit, Darwin)      +
+  + Support: mad@cern.ch, http://cern.ch/mad +
+  + Release   date: 2019.07.25               +
+  + Execution date: 2021.03.22 12:14:32      +
+  ++++++++++++++++++++++++++++++++++++++++++++
+TITLE,'test_TSR.MADX';        
+
+
+
+// Definition of the beam
+
+BEAM, PARTICLE=ELECTRON, ENERGY=2500;
+
+
+
+// Read the lattice file from the sequence file
+
+CALL, FILE="../TSR_FULL.seq";
+
+/***Definition of the elements***/
+
+kqf1=0.5;
+
+kqf2=0.5;
+
+kqf3=0.6;
+
+kqd1=-0.5;
+
+kqd2=-0.5;
+
+
+
+QF1: QUADRUPOLE,L=0.325,K1:=kqf1;
+
+QF2: QUADRUPOLE,L=0.325,K1:=kqf2;
+
+QF3: QUADRUPOLE,L=0.325,K1:=kqf3;                           
+
+
+
+QD1: QUADRUPOLE,L=0.325,K1:=kqd1;
+
+QD2: QUADRUPOLE,L=0.325,K1:=kqd2;
+
+
+
+AM: SBEND,L=1.15*45.0*(PI/180),ANGLE=45.0*(PI/180),E1=22.5*(PI/180),E2=22.5*(PI/180);
+
+
+
+/***Definition of the sequence***/
+
+TSR: SEQUENCE,REFER=ENTRY,L=55.4;
+
+ QD11: QD1, AT=2.6;
+
+ QF11: QF1, AT=3.36;
+
+ AM11: AM, AT=6.925-(1.315+1.15*PI/4);
+
+ QF12: QF2, AT=6.7625;
+
+ AM12: AM, AT=8.24;
+
+ QF13: QF3, AT=6.925+3.24;
+
+ QD12: QD2, AT=6.925+4;
+
+
+
+ QD21: QD2, AT=55.4/4.0+2.6;
+
+ QF21: QF3, AT=55.4/4.0+3.36;
+
+ AM21: AM, AT=55.4/4.0+(6.925-(1.315+1.15*PI/4));
+
+ QF22: QF2, AT=55.4/4.0+6.7625;
+
+ AM22: AM, AT=55.4/4.0+8.24;
+
+ QF23: QF1, AT=55.4/4.0+6.925+3.24;
+
+ QD22: QD1, AT=55.4/4.0+6.925+4;
+
+
+
+ QD31: QD1, AT=2*55.4/4.0+2.6;
+
+ QF31: QF1, AT=2*55.4/4.0+3.36;
+
+ AM31: AM, AT=2*55.4/4.0+(6.925-(1.315+1.15*PI/4));
+
+ QF32: QF2, AT=2*55.4/4.0+6.7625;
+
+ AM32: AM, AT=2*55.4/4.0+8.24;
+
+ QF33: QF3, AT=2*55.4/4.0+6.925+3.24;
+
+ QD32: QD2, AT=2*55.4/4.0+6.925+4;
+
+
+
+ QD41: QD2, AT=3*55.4/4.0+2.6;
+
+ QF41: QF3, AT=3*55.4/4.0+3.36;
+
+ AM41: AM, AT=3*55.4/4.0+(6.925-(1.315+1.15*PI/4));
+
+ QF42: QF2, AT=3*55.4/4.0+6.7625;
+
+ AM42: AM, AT=3*55.4/4.0+8.24;
+
+ QF43: QF1, AT=3*55.4/4.0+6.925+3.24;
+
+ QD42: QD1, AT=3*55.4/4.0+6.925+4;
+
+
+
+ENDSEQUENCE;
+
+OPTION, ECHO;
+
+
+
+// Activation of the sequence 
+
+USE, SEQUENCE=TSR;
+
+
+
+// Calculate and save periodic Twiss solution
+
+TWISS,SAVE,FILE=TSR1;
+
+enter Twiss module
+  
+iteration:   1 error:   0.000000E+00 deltap:   0.000000E+00
+orbit:   0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
+
+++++++ table: summ
+
+            length             orbit5               alfa            gammatr 
+              55.4                 -0       0.7907553223        1.124550436 
+
+                q1                dq1            betxmax              dxmax 
+       1.326893441      -0.3552417569        14.67741555        7.469106984 
+
+             dxrms             xcomax             xcorms                 q2 
+        6.63759432                  0                  0        2.588832093 
+
+               dq2            betymax              dymax              dyrms 
+      -1.325722415        8.543126033                  0                  0 
+
+            ycomax             ycorms             deltap            synch_1 
+                 0                  0                  0                  0 
+
+           synch_2            synch_3            synch_4            synch_5 
+                 0                  0                  0                  0 
+
+            nflips 
+                 0 
+
+
+// Plot betax and betay vs s (with interpolation)
+
+PLOT,HAXIS=S,VAXIS1=BETX,BETY,colour=100,FILE=TSR_PLOT,interpolate;
+
+Plot - default table plotted: twiss
+
+ GXPLOT-X11  1.50 initialized
+
+ plot number =            1
+PLOT,HAXIS=S,VAXIS1=DX,colour=100,FILE=tsr_plot,interpolate;
+
+Plot - default table plotted: twiss
+ plot number =            2
+
+
+STOP;
+
+  Number of warnings: 0
+
+  ++++++++++++++++++++++++++++++++++++++++++++
+  +          MAD-X finished normally         +
+  ++++++++++++++++++++++++++++++++++++++++++++

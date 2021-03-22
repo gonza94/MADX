@@ -1,0 +1,20 @@
+TITLE,'test_TSR.MADX';        
+
+// Definition of the beam
+BEAM, PARTICLE=ELECTRON, ENERGY=2500;
+
+// Read the lattice file from the sequence file
+CALL, FILE="../TSR_FULL.seq";
+OPTION, ECHO;
+
+// Activation of the sequence 
+USE, SEQUENCE=TSR;
+
+// Calculate and save periodic Twiss solution
+TWISS,SAVE,FILE=TSR1;
+
+// Plot betax and betay vs s (with interpolation)
+PLOT,HAXIS=S,VAXIS1=BETX,BETY,colour=100,FILE=TSR_PLOT,interpolate;
+PLOT,HAXIS=S,VAXIS1=DX,colour=100,FILE=tsr_plot,interpolate;
+
+STOP;
