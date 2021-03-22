@@ -3,7 +3,7 @@
   +     MAD-X 5.05.02  (64 bit, Darwin)      +
   + Support: mad@cern.ch, http://cern.ch/mad +
   + Release   date: 2019.07.25               +
-  + Execution date: 2021.03.22 12:26:54      +
+  + Execution date: 2021.03.22 15:26:30      +
   ++++++++++++++++++++++++++++++++++++++++++++
 TITLE,'test_TSR.MADX';        
 
@@ -25,9 +25,9 @@ DM: RBEND, L=0.621, ANGLE=PI/6;
 
 
 
-kqf=1.79388;
+kqf=1.64883;
 
-kqd=-2.29527;
+kqd=-1.79462;
 
 
 
@@ -160,6 +160,61 @@ USE, SEQUENCE=CRYF;
 
 
 
+/*** Plot matched Twiss parameters ***/
+
+MATCH, SEQUENCE=CRYF;
+
+START MATCHING
+
+number of sequences: 1
+sequence name: cryf
+GLOBAL, SEQUENCE=CRYF, Q1=2.42, Q2=2.42, GAMMATR=2.3;
+
+VARY,NAME=kqf,STEP=0.001,LOWER=1.5,UPPER=1.7;
+
+VARY,NAME=kqd,STEP=0.001,UPPER=-1.6,LOWER=-1.9;
+
+MIGRAD,CALLS=10000,TOLERANCE=1E-25;
+
+number of variables:    2
+user given constraints: 3
+total constraints:      3
+
+START MIGRAD:
+
+call:      12   Penalty function =   0.25092585E-03
+call:      23   Penalty function =   0.25092585E-03
+ accuracy limit
+ failed
+call:      26   Penalty function =   0.25092585E-03
+ENDMATCH;
+
+
+MATCH SUMMARY
+
+Node_Name                  Constraint   Type  Target Value       Final Value        Penalty
+--------------------------------------------------------------------------------------------------
+Global constraint:         q1           4     2.42000000E+00     2.41987708E+00     1.51086154E-06
+Global constraint:         q2           4     2.42000000E+00     2.42000860E+00     7.39040445E-09
+Global constraint:         gammat       4     2.30000000E+00     2.31579264E+00     2.49407600E-04
+
+
+Final Penalty Function =   2.50925852e-04
+
+
+
+
+
+Variable                 Final Value  Initial Value Lower Limit  Upper Limit 
+--------------------------------------------------------------------------------
+kqf                       1.64883e+00  1.64883e+00  1.50000e+00  1.70000e+00
+kqd                      -1.79462e+00 -1.79462e+00 -1.90000e+00 -1.60000e+00
+
+END MATCH SUMMARY
+
+VARIABLE "TAR" SET TO   2.50925852e-04
+
+
 // Calculate and save periodic Twiss solution
 
 TWISS,SAVE,FILE=CRYRING;
@@ -172,16 +227,16 @@ orbit:   0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0
 ++++++ table: summ
 
             length             orbit5               alfa            gammatr 
-             54.18                 -0       0.1883464262        2.304206026 
+             54.18                 -0       0.1864664316        2.315792644 
 
                 q1                dq1            betxmax              dxmax 
-       2.418793198       -1.520026832        7.154277673        2.028386201 
+       2.419877083       -1.408303543        7.334962748        2.025297906 
 
              dxrms             xcomax             xcorms                 q2 
-       1.781785873                  0                  0        2.708415197 
+       1.789708937                  0                  0        2.420008597 
 
                dq2            betymax              dymax              dyrms 
-      -4.459139456        9.152730094                  0                  0 
+      -3.135495607        4.436260653                  0                  0 
 
             ycomax             ycorms             deltap            synch_1 
                  0                  0                  0                  0 

@@ -10,14 +10,6 @@ OPTION, ECHO;
 // Activation of the sequence 
 USE, SEQUENCE=CRYF;
 
-/*** Plot matched Twiss parameters ***/
-MATCH, SEQUENCE=CRYF;
-GLOBAL, SEQUENCE=CRYF, Q1=2.42, Q2=2.42, GAMMATR=2.3;
-VARY,NAME=kqf,STEP=0.001,LOWER=1.5,UPPER=1.7;
-VARY,NAME=kqd,STEP=0.001,UPPER=-1.6,LOWER=-1.9;
-MIGRAD,CALLS=10000,TOLERANCE=1E-25;
-ENDMATCH;
-
 // Calculate and save periodic Twiss solution
 TWISS,SAVE,FILE=CRYRING;
 

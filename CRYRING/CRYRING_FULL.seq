@@ -1,21 +1,21 @@
 /***Definition of the elements***/
-DM: RBEND, L=0.621, ANGLE=PI/6;
+DM: RBEND, L=1.2*PI/6, ANGLE=PI/6, HGAP=0.04, FINT=0.56;
 
-kqf=1.79388;
-kqd=-2.29527;
+kqf=1.64883;
+kqd=-1.79462;
 
-QF: QUADRUPOLE, L=0.283, K1:=kqf;
-QD: QUADRUPOLE, L=0.283, K1:=kqd;
+QF: QUADRUPOLE, L=0.3/2, K1:=kqf;
+QD: QUADRUPOLE, L=0.3/2, K1:=kqd;
 
-ksf=0.0000;
-ksd=-0.0000;
+ksf=0;
+ksd=-0;
 SF: SEXTUPOLE, L=0.2, K2:=ksf;
 SD: SEXTUPOLE, L=0.2, K2:=ksd; 
 
 /***Definition of sequence***/
 CRYF: SEQUENCE, REFER=ENTRY, L=9.03*6;
  
- DM1: DM, AT=1.96;
+ DM1: DM, AT=1.75;
  QF1: QF, AT=3.196;
  QD1: QD, AT=4.370;
  SD1: SD, AT=4.720;

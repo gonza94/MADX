@@ -4,7 +4,7 @@ TITLE,'test_TSR.MADX';
 BEAM, PARTICLE=ELECTRON, ENERGY=2500;
 
 // Read the lattice file from the sequence file
-CALL, FILE="../CRYRING_FULL.seq";
+CALL, FILE="../CRYRING_CELL.seq";
 OPTION, ECHO;
 
 // Activation of the sequence 
@@ -12,17 +12,17 @@ USE, SEQUENCE=CRYF;
 
 /*** Plot matched Twiss parameters ***/
 MATCH, SEQUENCE=CRYF;
-GLOBAL, SEQUENCE=CRYF, Q1=2.42, Q2=2.42, GAMMATR=2.3;
-VARY,NAME=kqf,STEP=0.001,LOWER=1.5,UPPER=1.7;
-VARY,NAME=kqd,STEP=0.001,UPPER=-1.6,LOWER=-1.9;
-MIGRAD,CALLS=10000,TOLERANCE=1E-25;
+GLOBAL, SEQUENCE=CRYF, Q1=2.42/6, Q2=2.42/6;
+VARY,NAME=kqf,STEP=0.001,LOWER=1,UPPER=2.;
+VARY,NAME=kqd,STEP=0.001,UPPER=-1.5,LOWER=-2.5;
+MIGRAD,CALLS=10000,TOLERANCE=1E-20;
 ENDMATCH;
 
 // Calculate and save periodic Twiss solution
 TWISS,SAVE,FILE=CRYRING;
 
 // Plot betax and betay vs s (with interpolation)
-PLOT,HAXIS=S,VAXIS1=BETX,BETY,colour=100,FILE=CRYRING_PLOT,interpolate;
+PLOT,HAXIS=S,VAXIS1=BETX,BETY,DX,colour=100,FILE=CRYRING_PLOT,interpolate;
 PLOT,HAXIS=S,VAXIS1=DX,colour=100,FILE=tsr_plot,interpolate;
 
 STOP;
