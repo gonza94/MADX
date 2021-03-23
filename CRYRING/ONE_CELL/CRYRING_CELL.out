@@ -3,7 +3,7 @@
   +     MAD-X 5.05.02  (64 bit, Darwin)      +
   + Support: mad@cern.ch, http://cern.ch/mad +
   + Release   date: 2019.07.25               +
-  + Execution date: 2021.03.22 17:38:00      +
+  + Execution date: 2021.03.23 11:35:52      +
   ++++++++++++++++++++++++++++++++++++++++++++
 TITLE,'test_TSR.MADX';        
 
@@ -21,19 +21,19 @@ CALL, FILE="../CRYRING_CELL.seq";
 
 /***Definition of the elements***/
 
-DM: RBEND, L=1.2*PI/6, ANGLE=PI/6;
+DM: RBEND, L=0.621, ANGLE=PI/6;
 
 
 
-kqf=1.4;
+kqf=1.95;
 
-kqd=-1.5;
+kqd=-2.45;
 
 
 
-QF: QUADRUPOLE, L=0.3, K1:=kqf;
+QF: QUADRUPOLE, L=0.283/2, K1:=kqf;
 
-QD: QUADRUPOLE, L=0.3, K1:=kqd;
+QD: QUADRUPOLE, L=0.283/2, K1:=kqd;
 
 
 
@@ -41,41 +41,26 @@ ksf=0;
 
 ksd=0;
 
-//SF: SEXTUPOLE, L=0.2, K2:=ksf;
+SF: SEXTUPOLE, L=0.2, K2:=ksf;
 
-//SD: SEXTUPOLE, L=0.2, K2:=ksd; 
-
-
-
-LTOTAL=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05+0.2+0.624+0.3+0.05+0.2+0.35+(1.2*PI/6)+1.75;
+SD: SEXTUPOLE, L=0.2, K2:=ksd; 
 
 
 
-/***Definition of sequence***/
+L1:DRIFT,L=3.5/10;
 
-CRYF: SEQUENCE, REFER=ENTRY, L=LTOTAL;
+L2:DRIFT,L=0.624/2;
 
- 
+L3:DRIFT,L=0.05;
 
- DM1: DM, AT=1.75;
+LS:DRIFT,L=0.2;
 
- QF1: QF, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05;
+    
 
- QD1: QD, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05;
+HALFCRY(X,Y): LINE=(5*L1,DM,L1,X,L3,2*QF,2*L2,Y,L3,QD);
 
- //SD1: SD, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05;
+CRYF: LINE=(HALFCRY(LS,LS),-HALFCRY(SF,SD));
 
- QF2: QF, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05+0.2+0.624;
-
- //SF1: SF, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05+0.2+0.624+0.3+0.05;
-
- DM2: DM, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05+0.2+0.624+0.3+0.05+0.2+0.35;
-
-
-
-
-
-ENDSEQUENCE;
 OPTION, ECHO;
 
 
@@ -94,32 +79,29 @@ START MATCHING
 
 number of sequences: 1
 sequence name: cryf
-GLOBAL, SEQUENCE=CRYF, Q1=2.42/6, Q2=2.42/6;
+GLOBAL, SEQUENCE=CRYF, Q1=2.42/6, Q2=2.42/6, GAMMATR=2.3;
 
-VARY,NAME=kqf,STEP=0.001,LOWER=1,UPPER=2.;
+VARY,NAME=kqf,STEP=0.001,LOWER=1.6,UPPER=2.1;
 
-VARY,NAME=kqd,STEP=0.001,UPPER=-1.5,LOWER=-2.5;
+VARY,NAME=kqd,STEP=0.001,UPPER=-2.1,LOWER=-2.6;
 
 MIGRAD,CALLS=10000,TOLERANCE=1E-20;
 
 number of variables:    2
-user given constraints: 2
-total constraints:      2
+user given constraints: 3
+total constraints:      3
 
 START MIGRAD:
 
- reset parameter:kqd                                             from  -1.5000000000000000      to  -1.5000000000000000     
-call:      13   Penalty function =   0.11083405E+00
-call:      22   Penalty function =   0.88631494E-01
-call:      30   Penalty function =   0.19602088E-01
-call:      37   Penalty function =   0.36590745E-03
-call:      43   Penalty function =   0.16553850E-05
-call:      50   Penalty function =   0.45179379E-11
-call:      56   Penalty function =   0.87961577E-14
-call:      62   Penalty function =   0.17789717E-22
- verify
- converged
-call:      73   Penalty function =   0.29890433E-28
+call:      15   Penalty function =   0.32756914E-02
+call:      22   Penalty function =   0.13543058E-02
+call:      29   Penalty function =   0.12441772E-02
+call:      35   Penalty function =   0.12440901E-02
+call:      41   Penalty function =   0.12440900E-02
+call:      51   Penalty function =   0.12440900E-02
+ accuracy limit
+ failed
+call:      54   Penalty function =   0.12440900E-02
 ENDMATCH;
 
 
@@ -127,11 +109,12 @@ MATCH SUMMARY
 
 Node_Name                  Constraint   Type  Target Value       Final Value        Penalty
 --------------------------------------------------------------------------------------------------
-Global constraint:         q1           4     4.03333333E-01     4.03333333E-01     2.49600521E-29
-Global constraint:         q2           4     4.03333333E-01     4.03333333E-01     4.93038066E-30
+Global constraint:         q1           4     4.03333333E-01     4.01746049E-01     2.51947179E-04
+Global constraint:         q2           4     4.03333333E-01     4.03433596E-01     1.00525483E-06
+Global constraint:         gammat       4     2.30000000E+00     2.33148234E+00     9.91137586E-04
 
 
-Final Penalty Function =   2.98904327e-29
+Final Penalty Function =   1.24409002e-03
 
 
 
@@ -139,12 +122,12 @@ Final Penalty Function =   2.98904327e-29
 
 Variable                 Final Value  Initial Value Lower Limit  Upper Limit 
 --------------------------------------------------------------------------------
-kqf                       1.70314e+00  1.40000e+00  1.00000e+00  2.00000e+00
-kqd                      -1.99668e+00 -1.50000e+00 -2.50000e+00 -1.50000e+00
+kqf                       1.79830e+00  1.95000e+00  1.60000e+00  2.10000e+00
+kqd                      -2.09506e+00 -2.45000e+00 -2.60000e+00 -2.10000e+00
 
 END MATCH SUMMARY
 
-VARIABLE "TAR" SET TO   2.98904327e-29
+VARIABLE "TAR" SET TO   1.24409002e-03
 
 
 // Calculate and save periodic Twiss solution
@@ -159,16 +142,16 @@ orbit:   0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0
 ++++++ table: summ
 
             length             orbit5               alfa            gammatr 
-       8.604637061                 -0       0.1823398809        2.341850498 
+       8.553301829                 -0       0.1839652269        2.331482338 
 
                 q1                dq1            betxmax              dxmax 
-      0.4033333333      -0.2395138137        6.541876473        1.906923798 
+      0.4017460489      -0.2371555539        6.765523127        1.938857913 
 
              dxrms             xcomax             xcorms                 q2 
-        1.61526969                  0                  0       0.4033333333 
+       1.622253313                  0                  0       0.4034335957 
 
                dq2            betymax              dymax              dyrms 
-     -0.5161081036        5.016658613                  0                  0 
+      -0.515308785        5.078891316                  0                  0 
 
             ycomax             ycorms             deltap            synch_1 
                  0                  0                  0                  0 

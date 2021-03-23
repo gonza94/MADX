@@ -1,29 +1,21 @@
 /***Definition of the elements***/
-DM: RBEND, L=1.2*PI/6, ANGLE=PI/6;
+DM: RBEND, L=0.621, ANGLE=PI/6;
 
-kqf=1.4;
-kqd=-1.5;
+kqf=1.95;
+kqd=-2.45;
 
-QF: QUADRUPOLE, L=0.3, K1:=kqf;
-QD: QUADRUPOLE, L=0.3, K1:=kqd;
+QF: QUADRUPOLE, L=0.283/2, K1:=kqf;
+QD: QUADRUPOLE, L=0.283/2, K1:=kqd;
 
 ksf=0;
 ksd=0;
-//SF: SEXTUPOLE, L=0.2, K2:=ksf;
-//SD: SEXTUPOLE, L=0.2, K2:=ksd; 
+SF: SEXTUPOLE, L=0.2, K2:=ksf;
+SD: SEXTUPOLE, L=0.2, K2:=ksd; 
 
-LTOTAL=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05+0.2+0.624+0.3+0.05+0.2+0.35+(1.2*PI/6)+1.75;
-
-/***Definition of sequence***/
-CRYF: SEQUENCE, REFER=ENTRY, L=LTOTAL;
- 
- DM1: DM, AT=1.75;
- QF1: QF, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05;
- QD1: QD, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05;
- //SD1: SD, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05;
- QF2: QF, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05+0.2+0.624;
- //SF1: SF, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05+0.2+0.624+0.3+0.05;
- DM2: DM, AT=1.75+(1.2*PI/6)+0.35+0.2+0.05+0.3+0.624+0.2+0.05+0.3+0.05+0.2+0.624+0.3+0.05+0.2+0.35;
-
-
-ENDSEQUENCE;
+L1:DRIFT,L=3.5/10;
+L2:DRIFT,L=0.624/2;
+L3:DRIFT,L=0.05;
+LS:DRIFT,L=0.2;
+    
+HALFCRY(X,Y): LINE=(5*L1,DM,L1,X,L3,2*QF,2*L2,Y,L3,QD);
+CRYF: LINE=(HALFCRY(LS,LS),-HALFCRY(SF,SD));
