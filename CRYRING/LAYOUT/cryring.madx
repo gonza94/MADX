@@ -1,0 +1,30 @@
+TITLE,'test_CRYRING.MADX';
+
+/***Definition of the beam***/
+// Definition of the beam
+BEAM, PARTICLE=ELECTRON, ENERGY=2500;
+
+// Read the lattice file from the sequence file
+CALL, FILE="CRYRING_FULL.seq";
+OPTION, ECHO;
+
+// Activation of the sequence 
+USE, SEQUENCE=CRYF;
+
+/*** Plot matched Twiss parameters ***/
+MATCH, SEQUENCE=CRYF;
+GLOBAL, SEQUENCE=CRYF, Q1=2.42/6, Q2=2.42/6, GAMMATR=2.3;
+VARY,NAME=kqf,STEP=0.001,LOWER=1.6,UPPER=2.1;
+VARY,NAME=kqd,STEP=0.001,UPPER=-2.1,LOWER=-2.6;
+MIGRAD,CALLS=10000,TOLERANCE=1E-20;
+ENDMATCH;
+TWISS, SAVE, FILE=CRYRING_OPTICS;
+PLOT,HAXIS=S, COLOUR=100, INTERPOLATE=TRUE, VAXIS=BETX, BETY, DX;
+
+// Get geometrical survey
+SURVEY,FILE=survey.out;
+SELECT, FLAG=SURVEY, COLUMN=name,x,y,z;
+PLOT, TABLE=SURVEY, INTERPOLATE=TRUE, HAXIS=X, VAXIS=Z, HMIN=-17, HMAX=1;
+
+
+STOP;
