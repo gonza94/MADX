@@ -1,0 +1,187 @@
+
+  ++++++++++++++++++++++++++++++++++++++++++++
+  +     MAD-X 5.05.02  (64 bit, Darwin)      +
+  + Support: mad@cern.ch, http://cern.ch/mad +
+  + Release   date: 2019.07.25               +
+  + Execution date: 2021.03.23 11:48:16      +
+  ++++++++++++++++++++++++++++++++++++++++++++
+TITLE,'test_TSR.MADX';        
+
+
+
+// Definition of the beam
+
+BEAM, PARTICLE=ELECTRON, ENERGY=2500;
+
+
+
+// Read the lattice file from the sequence file
+
+CALL, FILE="../CRYRING_FULL.seq";
+
+/***Definition of the elements***/
+
+DM: RBEND, L=0.621, ANGLE=PI/6;
+
+
+
+kqf=1.79388;
+
+kqd=-2.29527;
+
+
+
+QF: QUADRUPOLE, L=0.283/2, K1:=kqf;
+
+QD: QUADRUPOLE, L=0.283/2, K1:=kqd;
+
+
+
+ksf=0.001;
+
+ksd=-0.001;
+
+SF: SEXTUPOLE, L=0.2, K2:=ksf;
+
+SD: SEXTUPOLE, L=0.2, K2:=ksd; 
+
+
+
+L1:DRIFT,L=3.5/10;
+
+L2:DRIFT,L=0.624/2;
+
+L3:DRIFT,L=0.05;
+
+LS:DRIFT,L=0.2;
+
+    
+
+HALFCRY(X,Y): LINE=(5*L1,DM,L1,X,L3,2*QF,2*L2,Y,L3,QD);
+
+CRYCELL: LINE=(HALFCRY(LS,LS),-HALFCRY(SF,SD));
+
+CRYF: LINE=(6*CRYCELL);
+OPTION, ECHO;
+
+
+
+// Activation of the sequence 
+
+USE, SEQUENCE=CRYF;
+
+
+
+/*** Plot matched Twiss parameters ***/
+
+MATCH, SEQUENCE=CRYF;
+
+START MATCHING
+
+number of sequences: 1
+sequence name: cryf
+GLOBAL, SEQUENCE=CRYF, Q1=2.42, Q2=2.42;
+
+VARY,NAME=kqf,STEP=0.001,LOWER=1.5,UPPER=2.3;
+
+VARY,NAME=kqd,STEP=0.001,UPPER=-1.5,LOWER=-2.5;
+
+MIGRAD,CALLS=10000,TOLERANCE=1E-20;
+
+number of variables:    2
+user given constraints: 2
+total constraints:      2
+
+START MIGRAD:
+
+call:      12   Penalty function =   0.61174236E+00
+call:      20   Penalty function =   0.15291186E+00
+call:      27   Penalty function =   0.19921645E-02
+call:      34   Penalty function =   0.51942458E-05
+call:      41   Penalty function =   0.32968124E-10
+call:      47   Penalty function =   0.35269527E-14
+ verify
+ converged
+call:      58   Penalty function =   0.85394193E-25
+ENDMATCH;
+
+
+MATCH SUMMARY
+
+Node_Name                  Constraint   Type  Target Value       Final Value        Penalty
+--------------------------------------------------------------------------------------------------
+Global constraint:         q1           4     2.42000000E+00     2.42000000E+00     7.11946967E-27
+Global constraint:         q2           4     2.42000000E+00     2.42000000E+00     7.82747233E-26
+
+
+Final Penalty Function =   8.53941930e-26
+
+
+
+
+
+Variable                 Final Value  Initial Value Lower Limit  Upper Limit 
+--------------------------------------------------------------------------------
+kqf                       1.80558e+00  1.79388e+00  1.50000e+00  2.30000e+00
+kqd                      -2.10211e+00 -2.29527e+00 -2.50000e+00 -1.50000e+00
+
+END MATCH SUMMARY
+
+VARIABLE "TAR" SET TO   8.53941930e-26
+
+
+// Calculate and save periodic Twiss solution
+
+TWISS,SAVE,FILE=CRYRING;
+
+enter Twiss module
+  
+iteration:   1 error:   0.000000E+00 deltap:   0.000000E+00
+orbit:   0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
+
+++++++ table: summ
+
+            length             orbit5               alfa            gammatr 
+       51.31981097                 -0       0.1827078549        2.339491064 
+
+                q1                dq1            betxmax              dxmax 
+              2.42       -1.439574441        6.812642297        1.928865229 
+
+             dxrms             xcomax             xcorms                 q2 
+       1.622519423                  0                  0               2.42 
+
+               dq2            betymax              dymax              dyrms 
+      -3.097519441        5.098526246                  0                  0 
+
+            ycomax             ycorms             deltap            synch_1 
+                 0                  0                  0                  0 
+
+           synch_2            synch_3            synch_4            synch_5 
+                 0                  0                  0                  0 
+
+            nflips 
+                 0 
+
+
+// Plot betax and betay vs s (with interpolation)
+
+PLOT,HAXIS=S,VAXIS1=BETX,BETY,DX,colour=100,FILE=CRYRING_PLOT,interpolate;
+
+Plot - default table plotted: twiss
+
+ GXPLOT-X11  1.50 initialized
+
+ plot number =            1
+PLOT,HAXIS=S,VAXIS1=DX,colour=100,FILE=tsr_plot,interpolate;
+
+Plot - default table plotted: twiss
+ plot number =            2
+
+
+STOP;
+
+  Number of warnings: 0
+
+  ++++++++++++++++++++++++++++++++++++++++++++
+  +          MAD-X finished normally         +
+  ++++++++++++++++++++++++++++++++++++++++++++
