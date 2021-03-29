@@ -1,0 +1,121 @@
+]TITLE,'test_TSR.MADX';        
+
+/***Definition of the beam***/
+//BEAM, PARTICLE=ION,MASS=11.17,CHARGE=6,ENERGY=11.17+0.0733;
+//BEAM, PARTICLE=ION, MASS=11.17, BRHO=1.0;
+BEAM, PARTICLE=PROTON, BRHO=1.4;
+//BEAM, PARTICLE=PROTON, ENERGY=1;
+
+/***Definition of the elements***/
+//kqf1=2.86166;
+//kqf2=1.78403;
+//kqf3=2.41903;
+//kqd1=-2.59160;
+//kqd2=-1.78993;
+kqf1=2.89285e+00;
+kqf2=1.97266e+00;
+kqf3=2.39739e+00;
+kqd1=-2.58867e+00;
+kqd2=-1.80788e+00;
+
+QF1: QUADRUPOLE,L=0.325,K1:=kqf1;
+QF2: QUADRUPOLE,L=0.325,K1:=kqf2;
+QF3: QUADRUPOLE,L=0.325,K1:=kqf3;                          
+QDE: QUADRUPOLE,L=0.325,K1:=kqd1;
+QDI: QUADRUPOLE,L=0.325,K1:=kqd2;
+AM: SBEND,L=1.15*45.0*(PI/180),ANGLE=45.0*(PI/180),E1=22.5*(PI/180),E2=22.5*(PI/180);
+
+vcav=0.05;
+RFCAV: RFCAVITY, L=1.0, VOLT:=vcav, LAG=0, HARMON=1;
+
+/***Definition of the sequence***/
+TSR: SEQUENCE,REFER=ENTRY,L=55.4;
+ 
+ QD11: QDE, AT=2.6;
+ QF11: QF1, AT=3.36;
+ AM11: AM, AT=6.925-(1.315+1.15*PI/4);
+ QF12: QF2, AT=6.7625;
+ AM12: AM, AT=8.24;
+ QF13: QF3, AT=6.925+3.24;
+ QD12: QDI, AT=6.925+4;
+ 
+ QD21: QDI, AT=55.4/4.0+2.6;
+ QF21: QF3, AT=55.4/4.0+3.36;
+ AM21: AM, AT=55.4/4.0+(6.925-(1.315+1.15*PI/4));
+ QF22: QF2, AT=55.4/4.0+6.7625;
+ AM22: AM, AT=55.4/4.0+8.24;
+ QF23: QF1, AT=55.4/4.0+6.925+3.24;
+ QD22: QDE, AT=55.4/4.0+6.925+4;
+
+ RF: RFCAV, AT=2*55.4/4;
+ 
+ QD31: QDE, AT=2*55.4/4.0+2.6;
+ QF31: QF1, AT=2*55.4/4.0+3.36;
+ AM31: AM, AT=2*55.4/4.0+(6.925-(1.315+1.15*PI/4));
+ QF32: QF2, AT=2*55.4/4.0+6.7625;
+ AM32: AM, AT=2*55.4/4.0+8.24;
+ QF33: QF3, AT=2*55.4/4.0+6.925+3.24;
+ QD32: QDI, AT=2*55.4/4.0+6.925+4;
+
+ QD41: QDI, AT=3*55.4/4.0+2.6;
+ QF41: QF3, AT=3*55.4/4.0+3.36;
+ AM41: AM, AT=3*55.4/4.0+(6.925-(1.315+1.15*PI/4));
+ QF42: QF2, AT=3*55.4/4.0+6.7625;
+ AM42: AM, AT=3*55.4/4.0+8.24;
+ QF43: QF1, AT=3*55.4/4.0+6.925+3.24;
+ QD42: QDE, AT=3*55.4/4.0+6.925+4;
+
+ENDSEQUENCE;
+ 
+
+/***Plot unmatched Twiss parameters***/
+USE, PERIOD=TSR;
+SELECT,FLAG=TWISS,COLUMN=name,s,betx,bety,dx;
+TWISS, FILE=unmatched_optics,BETX=2.5,BETY=1.5,DX=0.235;
+SELECT, FLAG=SUMM;
+WRITE, TABLE=SUMM, FILE=SUMMARY_UNMATCHED;
+PLOT, HAXIS=S, COLOUR=100, INTERPOLATE=TRUE, VAXIS=BETX, BETY;
+PLOT, INTERPOLATE=TRUE, HAXIS=S, COLOUR=100, VAXIS=DX;
+
+
+SELECT,FLAG=TWISS,COLUMN=name,s,betx,bety,dx;
+SAVEBETA, LABEL=BET_I, PLACE=#S, SEQUENCE=TSR;
+TWISS,FILE=matched_optics,SAVE;
+SELECT, FLAG=SUMM;
+WRITE, TABLE=SUMM, FILE=SUMMARY_MATCHED;
+PLOT,HAXIS=S, COLOUR=100, INTERPOLATE=TRUE, VAXIS=BETX, BETY;
+PLOT, INTERPOLATE=TRUE,HAXIS=S,COLOUR=100, VAXIS=DX;
+
+
+/***Output table with matched results***/
+INTERPOLATE=TRUE;
+Value, TABLE(SUMM,Q1);
+Value, TABLE(SUMM,Q2);
+
+/*** Extract initial beta values to initiate tracking ***/
+VALUE, BET_I->BETX;
+VALUE, BET_I->BETY;
+betx00=BET_I->BETX;
+bety00=BET_I->BETY;
+emt=5.0e-6;
+
+/*** Start PTC tracking code ***/
+PTC_CREATE_UNIVERSE;
+PTC_CREATE_LAYOUT, TIME=true, MODEL=1, NST=12, METHOD=6;
+ptc_setswitch, debuglevel=0, maxacceleration=true, exact_mis=true, time=true, totalpath=true, fringe=true;
+SHOW, BEAM;
+
+ i=1;
+ WHILE(i<2500){
+ /***PTC_START,X=((emt*betx00)^0.5)*TGAUSS(6),Y=((emt*bety00)^0.5)*TGAUSS(6),PX=((emt/betx00)^0.5)*TGAUSS(6),PY=((emt/bety00)^0.5)*TGAUSS(6), T=15*(RANF()-0.5)-2*23, PT=0.0001*(RANF()-0.5);***/
+ PTC_START,X=((emt*betx00)^0.5)*TGAUSS(6),Y=((emt*bety00)^0.5)*TGAUSS(6),PX=((emt/betx00)^0.5)*TGAUSS(6),PY=((emt/bety00)^0.5)*TGAUSS(6), T=10*(TGAUSS(6)), PT=0.001*(TGAUSS(6));
+ i=i+1;
+ };	
+
+PTC_OBSERVE, PLACE=RF;
+
+PTC_TRACK, ICASE=6, CLOSED_ORBIT=true, TURNS=2000, DUMP, ONETABLE, ELEMENT_BY_ELEMENT=true, FILE=basis;
+
+PTC_END;
+
+STOP;
