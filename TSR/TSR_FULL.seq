@@ -1,9 +1,9 @@
 /***Definition of the elements***/
-kqf1=0.5;
-kqf2=0.5;
-kqf3=0.6;
-kqd1=-0.5;
-kqd2=-0.5;
+kqf1=2.89;
+kqf2=1.73;
+kqf3=2.41;
+kqd1=-2.565;
+kqd2=-1.79;
 
 QF1: QUADRUPOLE,L=0.325,K1:=kqf1;
 QF2: QUADRUPOLE,L=0.325,K1:=kqf2;

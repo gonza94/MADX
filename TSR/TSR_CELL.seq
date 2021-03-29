@@ -1,9 +1,9 @@
 /***Definition of the elements***/
-kqf1=2.89;
-kqf2=1.73;
-kqf3=2.41;
-kqd1=-2.565;
-kqd2=-1.79;
+kqf1=0.5;
+kqf2=0.5;
+kqf3=0.6;
+kqd1=-0.5;
+kqd2=-0.5;
 
 QF1: QUADRUPOLE,L=0.325,K1:=kqf1;
 QF2: QUADRUPOLE,L=0.325,K1:=kqf2;
@@ -15,7 +15,8 @@ QD2: QUADRUPOLE,L=0.325,K1:=kqd2;
 AM: SBEND,L=1.15*45.0*(PI/180),ANGLE=45.0*(PI/180),E1=22.5*(PI/180),E2=22.5*(PI/180);
 
 /***Definition of the sequence***/
-TSR: SEQUENCE,REFER=ENTRY,L=55.4/2;
+TSR: SEQUENCE,REFER=ENTRY,L=55.4/4;
+
  QD11: QD1, AT=2.6;
  QF11: QF1, AT=3.36;
  AM11: AM, AT=6.925-(1.315+1.15*PI/4);
@@ -24,11 +25,4 @@ TSR: SEQUENCE,REFER=ENTRY,L=55.4/2;
  QF13: QF3, AT=6.925+3.24;
  QD12: QD2, AT=6.925+4;
 
- QD21: QD2, AT=55.4/4.0+2.6;
- QF21: QF3, AT=55.4/4.0+3.36;
- AM21: AM, AT=55.4/4.0+(6.925-(1.315+1.15*PI/4));
- QF22: QF2, AT=55.4/4.0+6.7625;
- AM22: AM, AT=55.4/4.0+8.24;
- QF23: QF1, AT=55.4/4.0+6.925+3.24;
- QD22: QD1, AT=55.4/4.0+6.925+4;
 ENDSEQUENCE;

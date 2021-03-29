@@ -1,0 +1,33 @@
+TITLE,'test_TSR.MADX';        
+
+// Definition of the beam
+BEAM, PARTICLE=ELECTRON, ENERGY=2500;
+
+// Read the lattice file from the sequence file
+CALL, FILE="../TSR_HALF.seq";
+OPTION, ECHO;
+
+// Activation of the sequence 
+USE, SEQUENCE=TSR;
+
+/***Define matching sequence***/
+MATCH, SEQUENCE=TSR;
+ GLOBAL, Q1=2.88/2, Q2=2.86/2, GAMMATR=3.4;
+ //CONSTRAINT, SEQUENCE=TSR, RANGE='QD12'/'QD21',BETX<10, BETY<4;
+ CONSTRAINT, SEQUENCE=TSR, RANGE='QF12',BETX<10, BETY<4;
+ VARY,NAME=kqf1,STEP=0.01,LOWER=2.5,UPPER=3.0;
+ VARY,NAME=kqf2,STEP=0.01,LOWER=1.7,UPPER=2.3;
+ VARY,NAME=kqf3,STEP=0.01,LOWER=2.2,UPPER=2.9;
+ VARY,NAME=kqd1,STEP=0.01,UPPER=-2.0,LOWER=-3;
+ VARY,NAME=kqd2,STEP=0.01,UPPER=-1.4,LOWER=-2.5;
+ MIGRAD,CALLS=10000,TOLERANCE=1E-6;
+ENDMATCH;
+
+// Calculate and save periodic Twiss solution
+TWISS,SAVE,FILE=TSR1;
+
+// Plot betax and betay vs s (with interpolation)
+PLOT,HAXIS=S,VAXIS1=BETX,BETY,colour=100,FILE=TSR_PLOT,interpolate;
+PLOT,HAXIS=S,VAXIS1=DX,colour=100,FILE=tsr_plot,interpolate;
+
+STOP;
