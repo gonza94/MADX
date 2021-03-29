@@ -4,18 +4,18 @@ TITLE,'test_TSR.MADX';
 BEAM, PARTICLE=ELECTRON, ENERGY=2500;
 
 // Read the lattice file from the sequence file
-CALL, FILE="TSR_FULL.seq";
+CALL, FILE="../TSR_FULL.seq";
 OPTION, ECHO;
 
 // Activation of the sequence 
 USE, SEQUENCE=TSR;
 
 // Calculate and save periodic Twiss solution
-TWISS,SAVE,FILE=TSR1;
+TWISS,SAVE,FILE=TSR_FULL;
 
 // Plot betax and betay vs s (with interpolation)
-PLOT,HAXIS=S,VAXIS1=BETX,BETY,colour=100,FILE=TSR_PLOT,interpolate;
-PLOT,HAXIS=S,VAXIS1=DX,colour=100,FILE=tsr_plot,interpolate;
+PLOT,HAXIS=S,VAXIS1=BETX,BETY,colour=100,FILE=TSR_LAY,interpolate;
+PLOT,HAXIS=S,VAXIS1=DX,colour=100,FILE=TSR_LAY,interpolate;
 
 // Get geometrical survey
 SURVEY,FILE=survey.out;
